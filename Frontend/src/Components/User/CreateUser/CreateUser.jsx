@@ -3,9 +3,9 @@ import Container from '../../UI/Container/Container'
 import Input from '../../UI/Input/Input';
 import Button from '../../UI/Button/Button';
 
-const initialValue = {name:'',email:'',age:''};
+// const initialValue = {name:'',email:'',age:''};
 const CreateUser = () => {
-  const [formData,setFormData]=useState(initialValue);
+  const [formData,setFormData]=useState(null);
   const [error,setError] = useState('');
   const handleInputChange = (e) =>{
     const {name,value} = e.target;
@@ -30,9 +30,9 @@ const CreateUser = () => {
     <Container className='w-1/3'>
       <form onSubmit={formHandler}>
         <h3>Create User</h3>
-        <Input type='text' label='Name' id='name' name='name' className={`${!error ? '' : 'border-red-500'}`} value={formData.name} onChange={handleInputChange}/>
-        <Input type='text' label='Email' id='email' name='email' className={`${!error ? '' : 'border-red-500'}`} value={formData.email} onChange={handleInputChange}/>
-        <Input type='number' label='Age' id='age' name='age' className={`${!error ? '' : 'border-red-500'}`} value={formData.age} onChange={handleInputChange}/>
+        <Input type='text' label='Name' id='name' name='name' className={`${!error ? '' : 'border-red-500'}`} value={formData?.name || ""} onChange={handleInputChange}/>
+        <Input type='text' label='Email' id='email' name='email' className={`${!error ? '' : 'border-red-500'}`} value={formData?.email || ""} onChange={handleInputChange}/>
+        <Input type='number' label='Age' id='age' name='age' className={`${!error ? '' : 'border-red-500'}`} value={formData?.age || ""} onChange={handleInputChange}/>
         <Button type='submit'>Add User</Button>
       </form>
     </Container>

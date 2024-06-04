@@ -2,11 +2,14 @@ import React, { useState } from 'react'
 import Container from '../../UI/Container/Container'
 import Input from '../../UI/Input/Input';
 import Button from '../../UI/Button/Button';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-// const initialValue = {name:'',email:'',age:''};
+const initialValue = {name:'',email:'',age:''};
 const CreateUser = () => {
   const [formData,setFormData]=useState(null);
   const [error,setError] = useState('');
+  const navigate = useNavigate();
   const handleInputChange = (e) =>{
     const {name,value} = e.target;
     setFormData(prevState=>({
@@ -22,7 +25,12 @@ const CreateUser = () => {
     }else{ 
       setError(false);
     }
-     
+    axios.post("http://localhost/createUser",{formData})
+    .then(result => {
+      console.log(result),
+      navigate('/');
+    })
+    .catch(err => console.log(err))
     setFormData(initialValue); 
   }
  

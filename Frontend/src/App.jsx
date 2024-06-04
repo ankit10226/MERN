@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"; 
-import User from "./Components/Custom/User/User";
-import CreateUser from "./Components/Custom/CreateUser/CreateUser";
-import UpdateUser from "./Components/Custom/UpdateUser/UpdateUser";
+import User from "./Components/User/User/User";
+import CreateUser from "./Components/User/CreateUser/CreateUser";
+import UpdateUser from "./Components/User/UpdateUser/UpdateUser";
 
 function App() { 
 

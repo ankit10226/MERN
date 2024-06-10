@@ -1,10 +1,7 @@
+const mongoose = require('mongoose');
+const app = require('./app');
 
-import { connect } from 'mongoose' 
-import {} from 'dotenv/config'
-import app from './app.js'
-import {} from './routes.js'
-
-connect(
+mongoose.connect(
     "mongodb+srv://rompiekiller:SQWvOHKJBbnIDdL7@cluster0.rgwx4qk.mongodb.net/CRUD?retryWrites=true&w=majority&appName=Cluster0"
 ).then(
     ()=>{

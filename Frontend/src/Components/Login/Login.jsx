@@ -5,6 +5,7 @@ import Input from '../UI/Input/Input';
 import Button from '../UI/Button/Button';
 import axios from 'axios'; 
 import { createPortal } from 'react-dom';
+import ErrorModal from '../UI/ErrorModal/ErrorModal';
 
 const initialValue = {username:'' , password:''}
 const Login = () => {
@@ -26,8 +27,7 @@ const Login = () => {
     }
 
     const formHandler = async (e) =>{
-        e.preventDefault();
-        console.log(formData);
+        e.preventDefault(); 
         if (formData.username == '' || formData.password == '') { 
           setError(true);
           return;
@@ -36,27 +36,25 @@ const Login = () => {
         }
 
         try {
-            const result = await axios.post("http://localhost:5000/login", formData);
-            console.log(result.response.data.message);
-            // if(result.status === 400){
-            //   setModalData({
-            //     showModal:true,
-            //     title:'An Error Occured',
-            //     message:'Age is not correct!'
-            //   });
-            // }
-            // navigate('/');
+            const res = await axios.post("http://localhost:5000/login", formData);
+            const token = res.data.token;
+            localStorage.setItem('token',token);
+            navigate('/home');
         } catch (err) {
-            console.error(err);
-        }
-        
-        // setFormData(initialValue); 
+            const errMsg = err.response.data.message; 
+            setModalData({
+              showModal:true,
+              title:'An Error Occured',
+              message:errMsg
+            }); 
+        } 
       }
       const setHideModal = (data) =>{
           setModalData(prevState =>({
               ...prevState,
               showModal:data
           })); 
+          setFormData(initialValue); 
       }
     return (
         <>
@@ -65,7 +63,7 @@ const Login = () => {
                 <form onSubmit={formHandler}>
                     <h3>Login User</h3> 
                     <Input type='text' label='Username' id='username' name='username' className={`${!error ? '' : 'border-red-500'}`} value={formData.username} onChange={handleInputChange}/>
-                    <Input type='number' label='password' id='password' name='password' className={`${!error ? '' : 'border-red-500'}`} value={formData.password} onChange={handleInputChange}/>
+                    <Input type='text' label='password' id='password' name='password' className={`${!error ? '' : 'border-red-500'}`} value={formData.password} onChange={handleInputChange}/>
                     <div className='flex justify-center items-center'> 
                      <Button type='submit'>Login</Button>
                      <Link to={'/signup'}><Button>Signup</Button></Link>

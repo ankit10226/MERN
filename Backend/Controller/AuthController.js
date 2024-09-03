@@ -28,7 +28,7 @@ exports.login = async (req, res) => {
 };
 
 exports.signup = async (req,res)=>{
-    try {
+    try { 
         const { name, username, password, age } = req.body.formData; 
  
         if (!name || !username || !password || !age) {

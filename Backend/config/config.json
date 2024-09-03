@@ -1,0 +1,15 @@
+{
+    "development": {
+        "username": "postgres",
+        "password": "mawai123",
+        "database": "php_training",
+        "host": "192.168.1.6",
+        "port": 5432,
+        "dialect": "postgres",
+        "schema": "mern",
+        "searchPath": "mern",
+        "dialectOptions": {
+        "prependSearchPath": true
+        }
+    }
+}

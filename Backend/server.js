@@ -1,17 +1,24 @@
-const mongoose = require('mongoose');
-const app = require('./app');
+const dotenv = require('dotenv');
+dotenv.config({ path: ".env" });
 
-mongoose.connect(
-    "mongodb+srv://rompiekiller:SQWvOHKJBbnIDdL7@cluster0.rgwx4qk.mongodb.net/CRUD?retryWrites=true&w=majority&appName=Cluster0"
-).then(
-    ()=>{
-        console.log('Connected');
-    }
-).catch(
-    (err)=>{
-        console.log('Failed ',err);
-    }
-)
+const app = require('./app');
+const sequelize = require("./config/sequelize");
+
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log("Database connection successful!");
+  })
+  .catch((err) => {
+    console.error("Unable to connect to the database:", err);
+  });
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT,() => {
+    console.log(`Listening to port ${PORT}`);
+})
+ 
 
 
  

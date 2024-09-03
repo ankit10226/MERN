@@ -10,7 +10,7 @@ import ErrorModal from '../UI/ErrorModal/ErrorModal';
 const initialValue = {name:'',username:'',password:'',age:''};
 const Signup = () => {
   const [formData,setFormData]=useState(initialValue);
-  const [error,setError] = useState('');
+  const [errors, setErrors] = useState({ name: false, username: false, password: false, age: false });
   const [errModal,setErrorModal] = useState(true);
   const [modalData, setModalData] = useState({
     showModal:false,
@@ -25,15 +25,22 @@ const Signup = () => {
       ...prevState,
       [name]:value
     }));
+
+    setErrors(prevState=>({ ...prevState, [name]: value === '' }));
   }
   const formHandler = async (e) =>{
-    e.preventDefault();
-    if (formData.name == '' || formData.username == '' || formData.password == '' || formData.age == '') { 
-      setError(true);
+    e.preventDefault(); 
+    const newErrors = {
+      name: formData.name === '',
+      username: formData.username === '',
+      password: formData.password === '',
+      age: formData.age === ''
+    };
+
+    setErrors(newErrors); 
+    if (Object.values(newErrors).some((error) => error)) {
       return;
-    }else{ 
-      setError(false);
-    }
+    } 
 
     try {
       const res = await axios.post("http://localhost:5000/signup",{formData}); 
@@ -80,10 +87,10 @@ const Signup = () => {
       <Container className='w-1/3'>
         <form onSubmit={formHandler}>
           <h3>Signup User</h3>
-          <Input type='text' label='Name' id='name' name='name' className={`${!error ? '' : 'border-red-500'}`} value={formData.name} onChange={handleInputChange}/>
-          <Input type='text' label='Username' id='username' name='username' className={`${!error ? '' : 'border-red-500'}`} value={formData.username} onChange={handleInputChange}/>
-          <Input type='text' label='Password' id='password' name='password' className={`${!error ? '' : 'border-red-500'}`} value={formData.password} onChange={handleInputChange}/>
-          <Input type='number' label='Age' id='age' name='age' className={`${!error ? '' : 'border-red-500'}`} value={formData.age} onChange={handleInputChange}/>
+          <Input type='text' label='Name' id='name' name='name' className={`${errors.name ? 'border-red-500' : ''}`} value={formData.name} onChange={handleInputChange}/>
+          <Input type='text' label='Username' id='username' name='username' className={`${errors.username ? 'border-red-500' : ''}`} value={formData.username} onChange={handleInputChange}/>
+          <Input type='text' label='Password' id='password' name='password' className={`${errors.password ? 'border-red-500' : ''}`} value={formData.password} onChange={handleInputChange}/>
+          <Input type='number' label='Age' id='age' name='age' className={`${errors.age ? 'border-red-500' : ''}`} value={formData.age} onChange={handleInputChange}/>
           <div className='flex justify-center items-center'> 
             <Button type='submit'>Signup</Button>
             <Link to={'/'}><Button>Login</Button></Link>

@@ -2,8 +2,19 @@ import React from "react";
 import logo from "../../assets/images/logo2.png";
 import Button from "../UI/Button/Button";
 import { navItems } from "./includes";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../lib/context/AuthContext"; 
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const { authState ,setLogout} = useAuth();
+  const issLoggedIn = authState.isLoggedIn;
+  const handleLogout = () => {
+    setLogout(() => {
+      navigate("/");
+    });
+  };
+
   return (
     <nav className="h-16 w-full flex">
       <div className="h-full w-1/6 flex items-center justify-start">
@@ -11,18 +22,34 @@ const Navbar = () => {
       </div>
       <div className="h-full w-4/6 flex items-center justify-center">
         <ul className="h-3/4 w-3/4 border-y border-[#C8CFDF] text-[#191C21] font-semibold flex justify-evenly items-center">
-          {navItems.map((item, index) => (               
-              <li key={index} className="flex justify-center items-center"><span className="border border-[#613FB7] rounded-full h-1 w-1 inline-block font-semibold mr-1"></span> {item}</li> 
+          {navItems.map((item, index) => (
+            <li key={index} className="flex justify-center items-center">
+              <span className="border border-[#613FB7] rounded-full h-1 w-1 inline-block font-semibold mr-1"></span>{" "}
+              {item}
+            </li>
           ))}
         </ul>
       </div>
       <div className="h-full w-1/6 flex items-center justify-between">
-        <Button className="rounded-md h-1/2 w-20 text-[#232732] font-semibold my-2 cursor-pointer">
-          Sign Up
-        </Button>
-        <Button className="rounded-md h-1/2 w-20 border border-[#6143BD] text-[#6143BD] font-semibold my-2 cursor-pointer hover:bg-[#6143BD] hover:text-white ease-linear duration-300">
-          Login
-        </Button>
+        {!issLoggedIn && (
+          <>
+            <Link to={"/signup"}>
+              <Button className="rounded-md h-1/2 w-20 text-[#232732] font-semibold my-2 cursor-pointer">
+                Sign Up
+              </Button>
+            </Link>
+            <Link to={"/login"}>
+              <Button className="rounded-md h-1/2 w-20 border border-[#6143BD] text-[#6143BD] font-semibold my-2 cursor-pointer hover:bg-[#6143BD] hover:text-white ease-linear duration-300">
+                Login
+              </Button>
+            </Link>
+          </>
+        )}
+        {issLoggedIn && (
+          <Button className="rounded-md h-1/2 w-20 border border-[#6143BD] text-[#6143BD] font-semibold my-2 cursor-pointer hover:bg-[#6143BD] hover:text-white ease-linear duration-300" onClick={handleLogout}>
+            Logout
+          </Button>
+        )}
       </div>
     </nav>
   );

@@ -1,104 +1,162 @@
-import React, { useState } from 'react'  
-import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
-import Container from '../UI/Container/Container';
-import Input from '../UI/Input/Input';
-import Button from '../UI/Button/Button';
-import { createPortal } from 'react-dom';
-import ErrorModal from '../UI/ErrorModal/ErrorModal';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import Input from "../../Components/UI/Input/Input";
+import Button from "../../Components/UI/Button/Button";
+import { createPortal } from "react-dom";
+import ErrorModal from "../../lib/ErrorModal/ErrorModal";
+import Flex from "../../Components/HOC/Flex";
+import sendRequest from "../../lib/utils/SendRequest";
 
-const initialValue = {name:'',username:'',password:'',age:''};
+const initialValue = { username: "", email: "", password: "", age: "" };
+const initialError = {
+  username: false,
+  email: false,
+  password: false,
+  age: false,
+};
 const Signup = () => {
-  const [formData,setFormData]=useState(initialValue);
-  const [errors, setErrors] = useState({ name: false, username: false, password: false, age: false });
-  const [errModal,setErrorModal] = useState(true);
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState(initialValue);
+  const [errors, setErrors] = useState(initialError);
+
+  const [errModal, setErrorModal] = useState(true);
   const [modalData, setModalData] = useState({
-    showModal:false,
-    title:'',
-    message:''
+    showModal: false,
+    title: "",
+    message: "",
   });
 
-  const navigate = useNavigate();
-  const handleInputChange = (e) =>{
-    const {name,value} = e.target;
-    setFormData(prevState=>({
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
       ...prevState,
-      [name]:value
+      [name]: value,
     }));
 
-    setErrors(prevState=>({ ...prevState, [name]: value === '' }));
-  }
-  const formHandler = async (e) =>{
-    e.preventDefault(); 
+    setErrors((prevState) => ({ ...prevState, [name]: value === "" }));
+  };
+  const formHandler = async (e) => {
+    e.preventDefault();
     const newErrors = {
-      name: formData.name === '',
-      username: formData.username === '',
-      password: formData.password === '',
-      age: formData.age === ''
+      username: formData.username === "",
+      email: formData.email === "",
+      password: formData.password === "",
+      age: formData.age === "",
     };
 
-    setErrors(newErrors); 
+    setErrors(newErrors);
     if (Object.values(newErrors).some((error) => error)) {
       return;
-    } 
+    }
 
     try {
-      const res = await axios.post("http://localhost:5000/signup",{formData}); 
+      const response = await fetch("http://localhost:5000/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          formData,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || `HTTP error! Status: ${response.status}`
+        );
+      }
+
       setErrorModal(false);
-      const resMsg = res.data.message; 
       setModalData({
-        showModal:true,
-        title:'Success',
-        message:resMsg
-      }); 
-      
-    } catch (err) {   
-        const errMsg = err.response.data.message.errorResponse.errmsg;
-        const result = errMsg.includes('duplicate key error collection');
-        if (result) {          
-          setModalData({
-            showModal:true,
-            title:'An Error Occured',
-            message:'User already Exists'
-          }); 
-        }else{
-          setModalData({
-            showModal:true,
-            title:'An Error Occured',
-            message:'Something Went Wrong'
-          }); 
-        }
-    } 
-  }
-  const setHideModal = (data) =>{
-    setModalData(prevState =>({
-        ...prevState,
-        showModal:data
-    })); 
-    if (errModal) {      
-      setFormData(initialValue); 
-    } else {
-      navigate('/');
+        showModal: true,
+        title: "Success",
+        message: data.message,
+      });
+    } catch (err) {
+      setModalData({
+        showModal: true,
+        title: "An Error Occured",
+        message: err.message,
+      });
     }
-  }
+  };
+
+  const setHideModal = (data) => {
+    setModalData((prevState) => ({
+      ...prevState,
+      showModal: data,
+    }));
+    if (errModal) {
+      setFormData(initialValue);
+    } else {
+      navigate("/");
+    }
+  };
   return (
-    <>
-      {modalData.showModal && createPortal(<ErrorModal title={modalData.title} message={modalData.message} hideModal={setHideModal}/> , document.getElementById('modalShowContainer'))}
-      <Container className='w-1/3'>
+    <Flex>
+      <div className="w-1/2 bg-white p-5 rounded-lg">
+        {modalData.showModal &&
+          createPortal(
+            <ErrorModal
+              title={modalData.title}
+              message={modalData.message}
+              hideModal={setHideModal}
+            />,
+            document.getElementById("modalShowContainer")
+          )}
+
         <form onSubmit={formHandler}>
-          <h3>Signup User</h3>
-          <Input type='text' label='Name' id='name' name='name' className={`${errors.name ? 'border-red-500' : ''}`} value={formData.name} onChange={handleInputChange}/>
-          <Input type='text' label='Username' id='username' name='username' className={`${errors.username ? 'border-red-500' : ''}`} value={formData.username} onChange={handleInputChange}/>
-          <Input type='text' label='Password' id='password' name='password' className={`${errors.password ? 'border-red-500' : ''}`} value={formData.password} onChange={handleInputChange}/>
-          <Input type='number' label='Age' id='age' name='age' className={`${errors.age ? 'border-red-500' : ''}`} value={formData.age} onChange={handleInputChange}/>
-          <div className='flex justify-center items-center'> 
-            <Button type='submit'>Signup</Button>
-            <Link to={'/'}><Button>Login</Button></Link>
+          <h3 className="font-semibold text-slate-500 text-xl">Signup User</h3>
+
+          <Input
+            type="text"
+            label="Username"
+            id="username"
+            name="username"
+            className={`${errors.username ? "border-red-500" : ""}`}
+            value={formData.username}
+            onChange={handleInputChange}
+          />
+          <Input
+            type="text"
+            label="E-Mail"
+            id="email"
+            name="email"
+            className={`${errors.email ? "border-red-500" : ""}`}
+            value={formData.email}
+            onChange={handleInputChange}
+          />
+          <Input
+            type="text"
+            label="Password"
+            id="password"
+            name="password"
+            className={`${errors.password ? "border-red-500" : ""}`}
+            value={formData.password}
+            onChange={handleInputChange}
+          />
+          <Input
+            type="number"
+            label="Age"
+            id="age"
+            name="age"
+            className={`${errors.age ? "border-red-500" : ""}`}
+            value={formData.age}
+            onChange={handleInputChange}
+          />
+          <div className="flex justify-center items-center">
+            <Button type="submit">Signup</Button>
+            <Link to={"/"}>
+              <Button>Cancel</Button>
+            </Link>
           </div>
         </form>
-      </Container>
-    </>
-  )
-}
+      </div>
+    </Flex>
+  );
+};
 
-export default Signup
+export default Signup;

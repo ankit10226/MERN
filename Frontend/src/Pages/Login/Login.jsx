@@ -1,77 +1,135 @@
-import React, { useState } from 'react' 
-import { Link, useNavigate } from 'react-router-dom';
-import Container from '../UI/Container/Container';
-import Input from '../UI/Input/Input';
-import Button from '../UI/Button/Button';
-import axios from 'axios'; 
-import { createPortal } from 'react-dom';
-import ErrorModal from '../UI/ErrorModal/ErrorModal';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import Input from "../../Components/UI/Input/Input";
+import Button from "../../Components/UI/Button/Button"; 
+import { createPortal } from "react-dom";
+import Flex from "../../Components/HOC/Flex";
+import ErrorModal from "../../lib/ErrorModal/ErrorModal";
+import { useAuth } from "../../lib/context/AuthContext";
 
-const initialValue = {username:'' , password:''}
+const initialValue = { username: "", password: "" };
+const initialError = { username: false, password: false };
 const Login = () => {
-    const [formData,setFormData]=useState(initialValue);
-    const [error,setError] = useState('');
-    const [modalData, setModalData] = useState({
-      showModal:false,
-      title:'',
-      message:''
-    });
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const { setLogin } = useAuth();
 
-    const handleInputChange = (e) =>{
-      const {name,value} = e.target;
-      setFormData(prevState=>({
-        ...prevState,
-        [name]:value
-      })); 
+  const [formData, setFormData] = useState(initialValue);
+  const [errors, setErrors] = useState(initialError); 
+  const [modalData, setModalData] = useState({
+    showModal: false,
+    title: "",
+    message: "",
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+
+    setErrors((prevState) => ({ ...prevState, [name]: value === "" }));
+  };
+
+  const formHandler = async (e) => {
+    e.preventDefault();
+
+    const newErrors = {
+      username: formData.username === "",
+      password: formData.password === "",
+    };
+
+    setErrors(newErrors);
+    if (Object.values(newErrors).some((error) => error)) {
+      return;
     }
+ 
 
-    const formHandler = async (e) =>{
-        e.preventDefault(); 
-        if (formData.username == '' || formData.password == '') { 
-          setError(true);
-          return;
-        }else{ 
-          setError(false);
-        }
+    try {
+      // const res = await axios.post("http://localhost:5000/login", formData);
+      const response = await fetch("http://localhost:5000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          formData,
+        }),
+      });
 
-        try {
-            const res = await axios.post("http://localhost:5000/login", formData);
-            const token = res.data.token;
-            localStorage.setItem('token',token);
-            navigate('/home');
-        } catch (err) {
-            const errMsg = err.response.data.message; 
-            setModalData({
-              showModal:true,
-              title:'An Error Occured',
-              message:errMsg
-            }); 
-        } 
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || `HTTP error! Status: ${response.status}`
+        );
       }
-      const setHideModal = (data) =>{
-          setModalData(prevState =>({
-              ...prevState,
-              showModal:data
-          })); 
-          setFormData(initialValue); 
-      }
-    return (
-        <>
-            {modalData.showModal && createPortal(<ErrorModal title={modalData.title} message={modalData.message} hideModal={setHideModal}/> , document.getElementById('modalShowContainer'))}
-            <Container className='w-1/3'>
-                <form onSubmit={formHandler}>
-                    <h3>Login User</h3> 
-                    <Input type='text' label='Username' id='username' name='username' className={`${!error ? '' : 'border-red-500'}`} value={formData.username} onChange={handleInputChange}/>
-                    <Input type='text' label='password' id='password' name='password' className={`${!error ? '' : 'border-red-500'}`} value={formData.password} onChange={handleInputChange}/>
-                    <div className='flex justify-center items-center'> 
-                     <Button type='submit'>Login</Button>
-                     <Link to={'/signup'}><Button>Signup</Button></Link>
-                    </div>
-                </form>
-            </Container>
-        </>
-    )
-}
+ 
+      setLogin({
+        token: data.token,
+        username: data.username,
+        id: data.id,
+        isLoggedIn: true,
+      });
+      navigate("/home");
+    } catch (err) {
+      console.log(err);
+      setModalData({
+        showModal: true,
+        title: "An Error Occured",
+        message: err.message,
+      });
+    }
+  };
+  const setHideModal = (data) => {
+    setModalData((prevState) => ({
+      ...prevState,
+      showModal: data,
+    }));
+    setFormData(initialValue);
+  };
+  return (
+    <Flex>
+      <div className="w-1/2 bg-white p-5 rounded-lg">
+        {modalData.showModal &&
+          createPortal(
+            <ErrorModal
+              title={modalData.title}
+              message={modalData.message}
+              hideModal={setHideModal}
+            />,
+            document.getElementById("modalShowContainer")
+          )}
+        <form onSubmit={formHandler}>
+          <h3 className="font-semibold text-slate-500 text-xl">Login User</h3>
+          <Input
+            type="text"
+            label="Username"
+            id="username"
+            name="username"
+            className={`${errors.username ? "border-red-500" : ""}`}
+            value={formData.username}
+            onChange={handleInputChange}
+          />
+          <Input
+            type="text"
+            label="Password"
+            id="password"
+            name="password"
+            className={`${errors.password ? "border-red-500" : ""}`}
+            value={formData.password}
+            onChange={handleInputChange}
+          />
+          <div className="flex justify-center items-center">
+            <Button type="submit">Login</Button>
+            <Link to={"/signup"}>
+              <Button>Signup</Button>
+            </Link>
+          </div>
+        </form>
+      </div>
+    </Flex>
+  );
+};
 
-export default Login
+export default Login;

@@ -1,11 +1,14 @@
 const express = require('express');
 const AuthController = require('./Controller/AuthController'); 
+const ToDoListController = require('./Controller/ToDoListController');
 
 const router = express.Router();
  
 router.post('/login', AuthController.login);
-
 router.post('/signup', AuthController.signup);
+router.post('/add-todolist', ToDoListController.addToDoList);
+router.get('/get-todolist', ToDoListController.getToDoList);
+router.post('/remove-todolist', ToDoListController.removeToDoList);
 
 module.exports = router;
 

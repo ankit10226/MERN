@@ -4,10 +4,12 @@ import Signup from "../../Pages/Signup/Signup";
 import Login from "../../Pages/Login/Login";
 import NotFound from "../NotFound/NotFound";
 import Home from "../../Pages/Home/Home";
+import ToDoList from "../../Components/ToDoList/ToDoList";
+import Form from "../../Pages/Form/Form";
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/index",
     element: <Index />,
   },
   {
@@ -23,9 +25,18 @@ const router = createBrowserRouter([
     element: <Home />,
   },
   {
+    path: "/todolist",
+    element: <ToDoList />,
+  },
+  {
+    path: "/",
+    element: <Form />,
+  },
+  {
     path: "*",
     element: <NotFound />,
   },
+  
 ]);
 
 export default router;

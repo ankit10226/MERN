@@ -5,7 +5,7 @@ import Button from "../../Components/UI/Button/Button";
 import { createPortal } from "react-dom";
 import Flex from "../../Components/HOC/Flex";
 import ErrorModal from "../../lib/ErrorModal/ErrorModal";
-import { useAuth } from "../../lib/context/AuthContext";
+import { useAuth } from "../../lib/context/AuthContextProvider";
 
 const initialValue = { username: "", password: "" };
 const initialError = { username: false, password: false };

@@ -1,13 +1,13 @@
 import { RouterProvider } from "react-router-dom";
-import router from "./lib/routes/AppRoutes";
-import AuthContext from "./lib/context/AuthContext";
+import router from "./lib/routes/AppRoutes"; 
+import AuthContextProvider from "./lib/context/AuthContextProvider";
 
 function App() {
   return (
     <div className="bg-gradient-to-r from-[#C7CEE0] to-[#E2E5EE]">
-      <AuthContext>
+      <AuthContextProvider>
         <RouterProvider router={router} />
-      </AuthContext>
+      </AuthContextProvider>
     </div>
   );
 }

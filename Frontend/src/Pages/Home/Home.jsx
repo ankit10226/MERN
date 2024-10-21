@@ -1,8 +1,7 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import Flex from "../../Components/HOC/Flex";
+import { useNavigate } from "react-router-dom"; 
 import Button from "../../Components/UI/Button/Button";
-import { useAuth } from "../../lib/context/AuthContext";
+import { useAuth } from "../../lib/context/AuthContextProvider";
 import Container from "../../Components/HOC/Container";
 import Navbar from "../../Components/Includes/Navbar";
 import Body from "../../Components/Includes/Body";

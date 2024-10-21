@@ -2,11 +2,10 @@ const sendRequest = async (
     url,
     method = "GET",
     headers = {},
-    body = null,
-    callback = () => {}
+    body = null, 
   ) => {
     let data;
-    try {
+    try {  
       const options = {
         method,
         headers: {
@@ -14,8 +13,10 @@ const sendRequest = async (
           ...headers,
         },
         body: body ? JSON.stringify(body) : null,
-      };
-  
+      }; 
+
+      console.log(options)
+
       const response = await fetch(url, options);
   
       data = await response.json();
@@ -25,11 +26,7 @@ const sendRequest = async (
       } 
     } catch (error) {
       console.error("Request failed:", error);
-    } finally { 
-      if (typeof callback === "function") {
-        callback();
-      }
-    }
+    } 
     return data;
   };
   

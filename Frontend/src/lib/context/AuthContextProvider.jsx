@@ -1,9 +1,14 @@
-import React, { createContext, useContext, useState, useEffect } from "react"; 
-const authContext = createContext();
+import React, { createContext, useContext, useState, useEffect } from "react";
+const AuthContext = createContext({
+  authState: null,
+  setLogin: () => {},
+  setLogout: () => {},
+  
+});
 
-export const useAuth = () => useContext(authContext);
+export const useAuth = () => useContext(AuthContext);
 
-const AuthContext = (props) => { 
+const AuthContextProvider = (props) => {
   // Initialize state with values from localStorage
   const [authState, setAuthState] = useState({
     token: localStorage.getItem("token"),
@@ -38,17 +43,17 @@ const AuthContext = (props) => {
     localStorage.removeItem("username");
     localStorage.removeItem("id");
     localStorage.removeItem("isLoggedIn");
-    
+
     if (callback) {
       callback();
     }
   };
 
   return (
-    <authContext.Provider value={{ authState, setLogin, setLogout }}>
+    <AuthContext.Provider value={{ authState, setLogin, setLogout }}>
       {props.children}
-    </authContext.Provider>
+    </AuthContext.Provider>
   );
 };
 
-export default AuthContext;
+export default AuthContextProvider;

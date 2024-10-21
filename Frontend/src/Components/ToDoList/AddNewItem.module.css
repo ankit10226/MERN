@@ -1,0 +1,6 @@
+.invalid h3{
+    color:red;
+}
+.invalid input{
+    border-color: red;
+}

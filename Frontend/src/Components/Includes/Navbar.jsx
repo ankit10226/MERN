@@ -3,7 +3,7 @@ import logo from "../../assets/images/logo2.png";
 import Button from "../UI/Button/Button";
 import { navItems } from "./includes";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../lib/context/AuthContext"; 
+import { useAuth } from "../../lib/context/AuthContextProvider"; 
 
 const Navbar = () => {
   const navigate = useNavigate();
